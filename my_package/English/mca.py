@@ -64,5 +64,5 @@ async def mca_admission(update: Update, context: ContextTypes.DEFAULT_TYPE):
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     # await update.message.reply_text("Start handler, Choose a route", reply_markup=reply_markup)
-    await context.bot.send_photo(chat_id=update.effective_chat.id, photo=open('/home/akash/Desktop/gvp_bot/python-telegram-bot-master/my_package/image/MCA_ADM.jpg', 'rb'))
+    await context.bot.send_photo(chat_id=update.effective_chat.id, photo=open('my_package/image/MCA_ADM.jpg', 'rb'))
     await context.bot.send_message(chat_id=update.effective_chat.id, text="Admission Process Link. https://www.gujaratvidyapith.org/admission/index.php",reply_markup=reply_markup)
