@@ -56,7 +56,13 @@ from my_package.hindi.kvk_hin import kvk_hin
 
 import pymongo
 
-myclient = pymongo.MongoClient("mongodb+srv://Akash8103:Akash8103@cluster0.dcz5j.mongodb.net/?retryWrites=true&w=majority")
+uri = "mongodb+srv://Akash81:Akash81@cluster0.dcz5j.mongodb.net/?retryWrites=true&w=majority"
+myclient = pymongo.MongoClient(uri,serverSelectionTimeoutMS=5000)
+
+try:
+    print(myclient.server_info())
+except Exception:
+    print("Unable to connect to the server.")
 
 mydb = myclient["Chatbot"]
 
