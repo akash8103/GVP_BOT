@@ -52,7 +52,7 @@ async def bca_admission(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # await query.answer()
     
     # await update.message.reply_text("Start handler, Choose a route", reply_markup=reply_markup)
-    await context.bot.send_photo(chat_id=update.effective_chat.id, photo=open('/home/akash/Desktop/gvp_bot/python-telegram-bot-master/my_package/image/BCA_ADM.jpg', 'rb'))
+    await context.bot.send_photo(chat_id=update.effective_chat.id, photo=open('my_package/image/BCA_ADM.jpg', 'rb'))
     await context.bot.send_message(chat_id=update.effective_chat.id, text="INTAKE : 60 Students")
     await context.bot.send_message(chat_id=update.effective_chat.id, text="DURATION : 3 Years (Six Semester)")
     await context.bot.send_message(chat_id=update.effective_chat.id, text="Admission Process Link. https://www.gujaratvidyapith.org/admission/index.php")
