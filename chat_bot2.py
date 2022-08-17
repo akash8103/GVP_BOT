@@ -56,7 +56,7 @@ from my_package.hindi.kvk_hin import kvk_hin
 
 import pymongo
 
-myclient = pymongo.MongoClient("mongodb+srv://Akash8103:Akash8103@cluster0.dcz5j.mongodb.net/?retryWrites=true&w=majority",connect=False)
+myclient = pymongo.MongoClient("mongodb+srv://Akash8103:Akash8103@cluster0.dcz5j.mongodb.net/?retryWrites=true&w=majority")
 
 mydb = myclient["Chatbot"]
 
