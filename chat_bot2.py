@@ -7,7 +7,6 @@ from telegram import ForceReply, Update
 from datetime import datetime, date
 from telegram.ext import CallbackQueryHandler,ConversationHandler
 from telegram import InlineKeyboardButton,InlineKeyboardMarkup
-from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove
 
 from my_package.English.english import english_button
 from my_package.gujrati.gujrati import gujrati_button
@@ -74,17 +73,14 @@ logging.basicConfig(
     level=logging.INFO
 )
 
-logger = logging.getLogger(__name__)
-
-GENDER, ADDRESS, EMAIL, PHONE = range(4)
-
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+async def start(update: Update, context: CallbackContext):
     user = update.effective_user
     currentTime = time.strftime('%H:%M')
     hour = datetime.now().hour
     userid = str(user.id)
     uid = userid.lstrip()
-
+    #mydb.gvpbot.insert_one({"_id":uid,"fName":user.first_name,"lName":user.last_name,"time":currentTime})
+    
     dateTime = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
     print(dateTime)
 
@@ -120,87 +116,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         #reply_markup=ForceReply(selective=False),
     )
 
-    """Starts the conversation and asks the user about their gender."""
-    reply_keyboard = [["MALE", "FEMALE"]]
-
-    await update.message.reply_text(
-        "Send /cancel to stop talking to me.\n\n"
-        "Are you a MALE or a FEMALE?",
-        reply_markup=ReplyKeyboardMarkup(
-            reply_keyboard, one_time_keyboard=True, input_field_placeholder="MALE or FEMALE?"
-        ),
-    )
-    return GENDER
-
-
-async def gender(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Stores the selected gender and asks for a photo."""
-    user = update.message.from_user
-    uid = str(user.id)
-    logger.info("Gender of %s: %s", user.first_name, update.message.text)
-    mydb.gvpbot.update_one({"_id":uid},{"$set":{"Gender":update.message.text}},upsert=True)
-    await update.message.reply_text(
-        "Please send me City/Area Name of yours ! or send /skip to skip location.",
-        reply_markup=ForceReply(selective=False),
-    )
-
-    return ADDRESS
-
-async def address(update: Update, context: ContextTypes.DEFAULT_TYPE) -> str:
-    """Stores the info about the user and ends the conversation."""
-    user = update.message.from_user
-    uid = str(user.id)
-    logger.info("Address of %s: %s", user.first_name, update.message.text)
-    mydb.gvpbot.update_one({"_id":uid},{"$set":{"Address":update.message.text}},upsert=True)
-    await update.message.reply_text(
-        "Thank You. Can You Provide Your Email : or send /skip to next step.",
-        reply_markup=ForceReply(selective=False),
-    )
-
-    return EMAIL
-
-async def skip_address(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Skips the address and asks for a email."""
-    user = update.message.from_user
-    logger.info("User %s did not send address.", user.first_name)
-    await update.message.reply_text(
-        "Thank You. Can You Provide Your Email : or send /skip to next step.",
-        reply_markup=ForceReply(selective=False),
-    )
-
-    return EMAIL
-
-async def email(update: Update, context: ContextTypes.DEFAULT_TYPE) -> str:
-    """Stores the info about the user and ends the conversation."""
-    user = update.message.from_user
-    uid = str(user.id)
-    logger.info("EMAIL of %s: %s", user.first_name, update.message.text)
-    mydb.gvpbot.update_one({"_id":uid},{"$set":{"Email_ID":update.message.text}},upsert=True)
-    await update.message.reply_text(
-        "Thank You. Can You Provide Your Mobile No :",
-        reply_markup=ForceReply(selective=False),
-    )
-
-    return PHONE
-
-async def skip_email(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Skips the address and asks for a email."""
-    user = update.message.from_user
-    logger.info("User %s did not send email.", user.first_name)
-    await update.message.reply_text(
-        "Thank You. Can You Provide Your Mobile No :",
-        reply_markup=ForceReply(selective=False),
-    )
-    return PHONE
-
-async def phone(update: Update, context: ContextTypes.DEFAULT_TYPE) -> str:
-    """Stores the info about the user and ends the conversation."""
-    user = update.message.from_user
-    uid = str(user.id)
-    logger.info("Mobile No of %s: %s", user.first_name, update.message.text)
-    mydb.gvpbot.update_one({"_id":uid},{"$set":{"Mobile_No":update.message.text}},upsert=True)
     await update.message.reply_html(
-        "Thank You ! \nHow May I Help You Today ?",
+        rf"How May I Help You Today ?",
         #reply_markup=ForceReply(selective=False),
     )
 
@@ -220,16 +137,6 @@ async def phone(update: Update, context: ContextTypes.DEFAULT_TYPE) -> str:
     reply_markup = InlineKeyboardMarkup(keyboard)
 
     await update.message.reply_text("Please choose:", reply_markup=reply_markup)
-
-async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Cancels and ends the conversation."""
-    user = update.message.from_user
-    logger.info("User %s canceled the conversation.", user.first_name)
-    await update.message.reply_text(
-        "Bye! I hope we can talk again some day.", reply_markup=ReplyKeyboardRemove()
-    )
-
-    return ConversationHandler.END
 
 async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
    
@@ -839,7 +746,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await hindi_button(update,context)
 
 async def reply(update: Update, context: CallbackContext):
-    await context.bot.send_message(chat_id=update.effective_chat.id, text="To Clear History Click on Three dots at top right croner and click on clear history, you can also stop the bot from that menu. \nTo cancel the chat send /cancel .")
+    await context.bot.send_message(chat_id=update.effective_chat.id, text="Click . /start")
 
 
 async def back(update: Update, context: CallbackContext):
@@ -854,40 +761,13 @@ async def back(update: Update, context: CallbackContext):
     reply_markup = InlineKeyboardMarkup(keyboard)
 
     await context.bot.send_message(chat_id=update.effective_chat.id,text="Please Choose Language:", reply_markup=reply_markup)
-# 5547103630:AAFafbPlUAPFcr3tCdhkdYQpJd8V23SPIB0 Akash
-# 5329459226:AAFmA9lwqHDhb1kdmvM97sBTwVEhJm0ca7Q Nikhil
+
 if __name__ == '__main__':
     application = ApplicationBuilder().token('5547103630:AAFafbPlUAPFcr3tCdhkdYQpJd8V23SPIB0').build()
     
-    # application.add_handler(CallbackQueryHandler(gender))
-    # application.add_handler(CallbackQueryHandler(address))
-    # application.add_handler(CallbackQueryHandler(email))
-    # application.add_handler(CallbackQueryHandler(phone))
-    application.add_handler(CallbackQueryHandler(button))
-    
-    # Add conversation handler with the states GENDER, Address, Email and Phone
-    conv_handler = ConversationHandler(
-        entry_points=[CommandHandler("start", start)],
-        states={
-            GENDER: [MessageHandler(filters.Regex("^(MALE|FEMALE)$"), gender)],
-            ADDRESS: [
-                        MessageHandler(filters.TEXT & ~filters.COMMAND, address),
-                        CommandHandler("skip", skip_address)
-                    ],
-            EMAIL:  [
-                        MessageHandler(filters.TEXT & ~filters.COMMAND, email),
-                        CommandHandler("skip", skip_email)
-                    ],
-            PHONE:  [MessageHandler(filters.TEXT & ~filters.COMMAND, phone)],
-        },
-        fallbacks=[CommandHandler("cancel", cancel)],
-    )
-    application.add_handler(CallbackQueryHandler(button))
-
-    application.add_handler(conv_handler)
-
     start_handler = CommandHandler('start', start)
     application.add_handler(start_handler)
+    application.add_handler(CallbackQueryHandler(button))
 
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND,reply))
     
